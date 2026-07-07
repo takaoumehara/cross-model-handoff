@@ -31,18 +31,44 @@ Claude Code, Codex, Gemini, Antigravity처럼 여러 AI 코딩 도구를 함께 
 
 ## 설치
 
-### Claude Code 플러그인으로
+설치 방법은 두 가지이며, 어느 쪽이 통하는지는 명령어를 어디에 입력하느냐에 달려 있다. `/plugin`이 예상대로 동작하지 않는다면 아래 문제 해결 표를 읽어보라 — 대개는 실제 Claude Code CLI 런타임이 아닌 곳에 있다는 뜻이다.
 
-```
-/plugin marketplace add takaoumehara/cross-model-handoff
-/plugin install cross-model-handoff@cross-model-handoff
-```
+### 방법 A — Claude Code 플러그인(터미널)
+
+공식적으로 지원되는 경로다. 실제 Claude Code CLI 세션 안에서만 작동한다 — 일반 셸에서는 작동하지 않고, IDE에 내장된 모든 채팅 패널에서 안정적으로 작동한다고 보장할 수도 없다(아래 표 참고).
+
+1. 터미널을 열고 Claude Code를 실행한다:
+   ```bash
+   claude
+   ```
+   `/plugin`은 이 대화형 세션 **안에서** 입력하는 명령어이지, 셸 명령어가 아니다. zsh/bash 프롬프트에서 `/plugin marketplace add ...`를 직접 실행하거나(혹은 `bash`로 파이프하면), `zsh: no such file or directory: /plugin`과 같은 오류가 난다. 이 오류가 난다는 것은애초에 Claude Code 세션에 들어가지 않았다는 뜻이다.
+
+2. Claude Code 세션 안에 들어간 뒤, 다음을 실행한다:
+   ```
+   /plugin marketplace add takaoumehara/cross-model-handoff
+   /plugin install cross-model-handoff@cross-model-handoff
+   ```
 
 이렇게 하면 명령어 2개와 훅 2개가 자동으로 연결된다(아래 참고).
 
-### 어떤 도구에서든, 수동으로
+### 방법 B — 수동 설정(어디서나 작동, 플러그인 시스템 불필요)
 
-`skills/cross-model-handoff-setup/SKILL.md`를 프로젝트에 복사하거나(혹은 그 설정 단계를 에이전트에게 그대로 붙여넣으면), `.handoff/`와 `AGENTS.md`가 자동으로 구성된다. 그 이후로는 전부 순수 마크다운 — 플러그인이 필요 없다.
+Codex, Gemini CLI, Antigravity, Cursor, IDE 자체 내장 AI 채팅 등 `/plugin`이 인식되지 않거나 `/plugin isn't available in this environment`와 같은 메시지가 뜨는 곳이라면 이 방법을 사용한다.
+
+1. [`skills/cross-model-handoff-setup/SKILL.md`](skills/cross-model-handoff-setup/SKILL.md)의 내용을 에이전트 채팅에 붙여넣는다(또는 GitHub 원본 파일 URL을 주고 읽고 따르라고 지시한다).
+2. "이 프로젝트에 cross-model handoff를 설정해줘"라고 말한다.
+3. `.handoff/`와 `AGENTS.md`가 만들어진다. 그 이후로는 전부 순수 마크다운과 일반 지시문일 뿐 — 플러그인 런타임이 필요 없다.
+
+설정이 끝나면 `/handoff-and-clear`와 `/handoff-list`도 필수는 아니다. 사용 중인 도구가 커스텀 슬래시 명령어를 지원하지 않는다면, 인계 메모를 쓰고 싶을 때 [`commands/handoff-and-clear.md`](commands/handoff-and-clear.md)의 내용을 그냥 일반 프롬프트로 붙여넣으면 된다.
+
+### 문제 해결: `/plugin`은 실제로 어디서 작동하는가
+
+| 어디에 입력했는가 | 무슨 일이 일어나는가 | 어떻게 해야 하는가 |
+|---|---|---|
+| Claude Code 밖의 일반 터미널 프롬프트(zsh/bash) | `zsh: no such file or directory: /plugin` | `/plugin`은 셸 명령어가 아니다. 먼저 `claude`를 실행한 뒤, 그 세션 안에서 명령어를 입력하라(방법 A) |
+| 실제 Claude Code CLI 세션 안(`claude` 실행 후) | 작동한다 | 이것이 의도된 경로다 |
+| 실제 Claude Code 엔진이 아닌, IDE 자체 내장 AI 채팅(IDE와 버전마다 다름 — "Claude Code" 패널처럼 보여도 내부적으로는 다른 에이전트 기반으로 동작하는 경우가 있다) | `/plugin isn't available in this environment`라고 나오거나, 아예 명령어로 인식되지 않을 수 있다 | 방법 B를 사용하라 — 어떤 플러그인 시스템에도 의존하지 않는다 |
+| Antigravity에 내장된 "Claude Code" 패널 | `/plugin isn't available in this environment` | 예상된 동작이다 — 그 패널은 Antigravity 자체의 에이전트 기반에서 동작하는 것이지, Claude Code의 플러그인 런타임이 아니다. 방법 B를 사용하라 |
 
 ## 얻게 되는 것
 

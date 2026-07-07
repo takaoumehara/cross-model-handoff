@@ -31,18 +31,44 @@ Nothing here is Claude-specific. `AGENTS.md` + `.handoff/*.md` is just files in 
 
 ## Install
 
-### As a Claude Code plugin
+There are two ways to install this, and which one works depends on where you're typing the command. Read the troubleshooting table below if `/plugin` doesn't do what you expect — it usually means you're in a place that isn't the actual Claude Code CLI runtime.
 
-```
-/plugin marketplace add takaoumehara/cross-model-handoff
-/plugin install cross-model-handoff@cross-model-handoff
-```
+### Method A — Claude Code plugin (terminal)
+
+This is the officially supported path. It only works inside the real Claude Code CLI session — not in a plain shell, and not reliably inside every IDE-embedded chat panel (see the table below).
+
+1. Open a terminal and start Claude Code:
+   ```bash
+   claude
+   ```
+   `/plugin` is a command you type **inside** this interactive session — it is not a shell command. If you run `/plugin marketplace add ...` directly at your zsh/bash prompt (or pipe it to `bash`), it fails with something like `zsh: no such file or directory: /plugin`. That error means you never entered a Claude Code session in the first place.
+
+2. Once you're inside the Claude Code session, run:
+   ```
+   /plugin marketplace add takaoumehara/cross-model-handoff
+   /plugin install cross-model-handoff@cross-model-handoff
+   ```
 
 This wires up two commands and two hooks automatically (see below).
 
-### Manually, for any tool
+### Method B — Manual setup (works everywhere, no plugin system required)
 
-Copy `skills/cross-model-handoff-setup/SKILL.md` into your project (or just paste its setup steps to your agent) — it will scaffold `.handoff/` and `AGENTS.md` for you. Everything after that is plain markdown; no plugin required.
+Use this if you're on Codex, Gemini CLI, Antigravity, Cursor, an IDE's own built-in AI chat, or anywhere `/plugin` isn't recognized or says something like `/plugin isn't available in this environment`.
+
+1. Paste the contents of [`skills/cross-model-handoff-setup/SKILL.md`](skills/cross-model-handoff-setup/SKILL.md) into your agent's chat (or just give it the raw GitHub URL and ask it to read and follow it).
+2. Tell it: "Set up cross-model handoff in this project."
+3. It creates `.handoff/` and `AGENTS.md` for you. Everything after that is plain markdown and plain instructions — no plugin runtime required.
+
+Once set up, `/handoff-and-clear` and `/handoff-list` aren't required either. If your tool doesn't support custom slash commands, just paste the contents of [`commands/handoff-and-clear.md`](commands/handoff-and-clear.md) as a plain prompt whenever you want to write a handoff note.
+
+### Troubleshooting: where does `/plugin` actually work?
+
+| Where you type it | What happens | What to do |
+|---|---|---|
+| A plain terminal prompt (zsh/bash), not inside Claude Code | `zsh: no such file or directory: /plugin` | `/plugin` is not a shell command. Run `claude` first, then type the command inside that session (Method A). |
+| Inside the actual Claude Code CLI session (after running `claude`) | Works | This is the intended path. |
+| An IDE's own built-in AI chat that isn't the real Claude Code engine (varies by IDE and version — some show a "Claude Code" panel that's actually a different agent harness underneath) | May say `/plugin isn't available in this environment`, or may just not recognize it as a command | Use Method B — it doesn't depend on any plugin system. |
+| Antigravity's embedded "Claude Code" panel | `/plugin isn't available in this environment` | Expected — that panel runs Antigravity's own agent harness, not the Claude Code plugin runtime. Use Method B. |
 
 ## What you get
 

@@ -31,18 +31,44 @@
 
 ## 安装
 
-### 作为 Claude Code 插件
+有两种安装方式,哪一种能用取决于你在哪里输入命令。如果 `/plugin` 没有按预期工作,请阅读下面的故障排查表——通常这意味着你所在的地方并不是真正的 Claude Code CLI 运行时。
 
-```
-/plugin marketplace add takaoumehara/cross-model-handoff
-/plugin install cross-model-handoff@cross-model-handoff
-```
+### 方式 A —— 作为 Claude Code 插件(终端)
+
+这是官方支持的路径。它只能在真正的 Claude Code CLI 会话内工作——在普通 shell 里不行,在某些 IDE 内嵌的聊天面板里也不一定能保证可用(见下表)。
+
+1. 打开终端,启动 Claude Code:
+   ```bash
+   claude
+   ```
+   `/plugin` 是在这个交互式会话**内部**输入的命令,而不是 shell 命令。如果你直接在 zsh/bash 提示符下运行 `/plugin marketplace add ...`(或者把它管道给 `bash`),会得到类似 `zsh: no such file or directory: /plugin` 的报错。出现这个报错就说明你根本没有进入 Claude Code 会话。
+
+2. 进入 Claude Code 会话后,运行:
+   ```
+   /plugin marketplace add takaoumehara/cross-model-handoff
+   /plugin install cross-model-handoff@cross-model-handoff
+   ```
 
 这会自动配置好两个命令和两个 hook(见下文)。
 
-### 手动安装,适用于任何工具
+### 方式 B —— 手动设置(适用于任何地方,不需要插件系统)
 
-把 `skills/cross-model-handoff-setup/SKILL.md` 复制到你的项目里(或者直接把它的设置步骤粘贴给你的 agent),它会自动搭建好 `.handoff/` 和 `AGENTS.md`。之后的一切都是纯 Markdown,不需要插件。
+如果你在使用 Codex、Gemini CLI、Antigravity、Cursor、或某个 IDE 自带的 AI 聊天,又或者在任何 `/plugin` 不被识别、或提示类似 `/plugin isn't available in this environment` 的地方,就用这个方法。
+
+1. 把 [`skills/cross-model-handoff-setup/SKILL.md`](skills/cross-model-handoff-setup/SKILL.md) 的内容粘贴到你的 agent 聊天窗口里(或者直接把 GitHub 的原始文件链接给它,让它读取并照做)。
+2. 告诉它:"在这个项目里设置 cross-model handoff。"
+3. 它会为你创建 `.handoff/` 和 `AGENTS.md`。之后的一切都只是纯 Markdown 和普通指令——不需要插件运行时。
+
+设置完成后,`/handoff-and-clear` 和 `/handoff-list` 也不是必须的。如果你的工具不支持自定义斜杠命令,想写交接笔记的时候,直接把 [`commands/handoff-and-clear.md`](commands/handoff-and-clear.md) 的内容当作普通提示词粘贴进去就行。
+
+### 故障排查:`/plugin` 到底在哪里能用?
+
+| 你在哪里输入 | 会发生什么 | 该怎么办 |
+|---|---|---|
+| 普通终端提示符(zsh/bash),不在 Claude Code 里 | `zsh: no such file or directory: /plugin` | `/plugin` 不是 shell 命令。先运行 `claude`,再在那个会话里输入命令(方式 A) |
+| 真正的 Claude Code CLI 会话内(运行 `claude` 之后) | 正常工作 | 这是预期的路径 |
+| 并非真正 Claude Code 引擎的、IDE 自带的 AI 聊天(因 IDE 和版本而异——有些界面显示"Claude Code"面板,但底层其实是另一个 agent 框架) | 可能提示 `/plugin isn't available in this environment`,或者根本不识别这个命令 | 使用方式 B —— 它不依赖任何插件系统 |
+| Antigravity 内嵌的 "Claude Code" 面板 | `/plugin isn't available in this environment` | 这是预期行为——那个面板运行的是 Antigravity 自己的 agent 框架,而不是 Claude Code 的插件运行时。使用方式 B |
 
 ## 你会得到什么
 
