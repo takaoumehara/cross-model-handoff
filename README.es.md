@@ -55,11 +55,11 @@ Esto conecta automáticamente dos comandos y dos hooks (ver más abajo).
 
 Usa esto si estás en Codex, Gemini CLI, Antigravity, Cursor, el chat de IA propio de un IDE, o en cualquier lugar donde `/plugin` no se reconozca o diga algo como `/plugin isn't available in this environment`.
 
-1. Pega el contenido de [`skills/cross-model-handoff-setup/SKILL.md`](skills/cross-model-handoff-setup/SKILL.md) en el chat de tu agente (o simplemente dale la URL cruda de GitHub y pídele que la lea y la siga).
+1. Pega el contenido de [`skills/handoff-setup/SKILL.md`](skills/handoff-setup/SKILL.md) en el chat de tu agente (o simplemente dale la URL cruda de GitHub y pídele que la lea y la siga).
 2. Dile: "Configura cross-model handoff en este proyecto."
 3. Creará `.handoff/` y `AGENTS.md` por ti. Todo lo demás es markdown plano e instrucciones normales — no se necesita ningún runtime de plugins.
 
-Una vez configurado, `/handoff-and-clear` y `/handoff-list` tampoco son obligatorios. Si tu herramienta no soporta comandos de barra personalizados, simplemente pega el contenido de [`commands/handoff-and-clear.md`](commands/handoff-and-clear.md) como un prompt normal cada vez que quieras escribir una nota de traspaso.
+Una vez configurado, `/handoff` y `/handoff-list` tampoco son obligatorios. Si tu herramienta no soporta comandos de barra personalizados, simplemente pega el contenido de [`commands/handoff.md`](commands/handoff.md) como un prompt normal cada vez que quieras escribir una nota de traspaso.
 
 ### Solución de problemas: ¿dónde funciona realmente `/plugin`?
 
@@ -75,7 +75,7 @@ Una vez configurado, `/handoff-and-clear` y `/handoff-list` tampoco son obligato
 Una vez instalado (Método A o B), todo el flujo se reduce a tres momentos.
 
 1. **Trabajas con normalidad.** No hay nada que hacer — ningún archivo de estado que mantener, ninguna wiki que actualizar. Los commits de git son la única fuente de verdad.
-2. **Estás a punto de limpiar el contexto o cambiar de herramienta.** Ejecuta `/handoff-and-clear` (o, con el Método B, simplemente di "escribe una nota de traspaso"). Escribe una nota en `.handoff/` con una frase de paso. Hazlo de forma proactiva — no esperes a que el contexto se sature.
+2. **Estás a punto de limpiar el contexto o cambiar de herramienta.** Ejecuta `/handoff` (o, con el Método B, simplemente di "escribe una nota de traspaso"). Escribe una nota en `.handoff/` con una frase de paso. Hazlo de forma proactiva — no esperes a que el contexto se sature.
 3. **Vuelves, en cualquier herramienta.** Di "lee AGENTS.md y retoma" (o `/handoff-list` si no estás seguro de en qué hilo estabas). Nombra la frase de paso, o el número, y el agente lee esa nota y retoma justo donde lo dejaste.
 
 Eso es todo el ciclo. Sin paneles de control, sin mantenimiento diario.
@@ -84,7 +84,7 @@ Eso es todo el ciclo. Sin paneles de control, sin mantenimiento diario.
 
 | | |
 |---|---|
-| `/handoff-and-clear` | Escribe una nota en `.handoff/{date}-{slug}.md` con una frase de paso, qué se hizo, el estado actual, **estado de ejecución** (procesos en segundo plano, servidores de desarrollo, worktrees abiertos — lo que `git log` no puede decirte), el siguiente paso, y los archivos que hay que leer a continuación. Después es seguro hacer `/clear`. |
+| `/handoff` | Escribe una nota en `.handoff/{date}-{slug}.md` con una frase de paso, qué se hizo, el estado actual, **estado de ejecución** (procesos en segundo plano, servidores de desarrollo, worktrees abiertos — lo que `git log` no puede decirte), el siguiente paso, y los archivos que hay que leer a continuación. Después es seguro hacer `/clear`. |
 | `/handoff-list` | Escanea `.handoff/` e imprime una lista numerada de frases de paso, para que puedas elegir una en lugar de releer todos los archivos. |
 | Hook `SessionStart` | En `clear`/`compact`/`startup`, inyecta automáticamente ese mismo índice numerado en el contexto — retomar suele ser tan simple como decir "continúa con el #3". |
 | Hook `PreCompact` | Red de seguridad: obliga a escribir una nota de traspaso si el contexto está a punto de auto-compactarse. **No es la vía principal** — ver más abajo. |
@@ -93,7 +93,7 @@ Eso es todo el ciclo. Sin paneles de control, sin mantenimiento diario.
 
 La auto-compactación se activa cuando el contexto está casi lleno — es decir, cuando el modelo está en su punto menos fiable (tanto la profundidad de razonamiento como la precisión de recuperación se degradan de forma medible a medida que se llena una ventana). Si dependes del hook `PreCompact` como único disparador de traspaso, estás pidiéndole a la versión más degradada del modelo en tu sesión que escriba la nota de la que dependerá la siguiente sesión.
 
-Trata `/handoff-and-clear` como algo que ejecutas **de forma proactiva**, más temprano en una sesión, cada vez que estás a punto de cambiar de tarea o de herramienta. Trata el hook `PreCompact` como el respaldo de emergencia que esperas que nunca se active.
+Trata `/handoff` como algo que ejecutas **de forma proactiva**, más temprano en una sesión, cada vez que estás a punto de cambiar de tarea o de herramienta. Trata el hook `PreCompact` como el respaldo de emergencia que esperas que nunca se active.
 
 ## Ejemplo de nota
 

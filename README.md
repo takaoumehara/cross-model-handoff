@@ -55,11 +55,11 @@ This wires up two commands and two hooks automatically (see below).
 
 Use this if you're on Codex, Gemini CLI, Antigravity, Cursor, an IDE's own built-in AI chat, or anywhere `/plugin` isn't recognized or says something like `/plugin isn't available in this environment`.
 
-1. Paste the contents of [`skills/cross-model-handoff-setup/SKILL.md`](skills/cross-model-handoff-setup/SKILL.md) into your agent's chat (or just give it the raw GitHub URL and ask it to read and follow it).
+1. Paste the contents of [`skills/handoff-setup/SKILL.md`](skills/handoff-setup/SKILL.md) into your agent's chat (or just give it the raw GitHub URL and ask it to read and follow it).
 2. Tell it: "Set up cross-model handoff in this project."
 3. It creates `.handoff/` and `AGENTS.md` for you. Everything after that is plain markdown and plain instructions — no plugin runtime required.
 
-Once set up, `/handoff-and-clear` and `/handoff-list` aren't required either. If your tool doesn't support custom slash commands, just paste the contents of [`commands/handoff-and-clear.md`](commands/handoff-and-clear.md) as a plain prompt whenever you want to write a handoff note.
+Once set up, `/handoff` and `/handoff-list` aren't required either. If your tool doesn't support custom slash commands, just paste the contents of [`commands/handoff.md`](commands/handoff.md) as a plain prompt whenever you want to write a handoff note.
 
 ### Troubleshooting: where does `/plugin` actually work?
 
@@ -75,7 +75,7 @@ Once set up, `/handoff-and-clear` and `/handoff-list` aren't required either. If
 Once installed (Method A or B above), the whole workflow is three moments:
 
 1. **You're working normally.** Nothing to do — no state file to maintain, no wiki to update. Git commits are the source of truth.
-2. **You're about to clear context or switch tools.** Run `/handoff-and-clear` (or, on Method B, just say "write a handoff note"). It writes one note to `.handoff/` with a passphrase. Do this proactively — don't wait for context to get huge.
+2. **You're about to clear context or switch tools.** Run `/handoff` (or, on Method B, just say "write a handoff note"). It writes one note to `.handoff/` with a passphrase. Do this proactively — don't wait for context to get huge.
 3. **You're back, in any tool.** Say "read AGENTS.md and resume" (or `/handoff-list` if you're not sure which thread you were on). Name the passphrase, or the number, and the agent reads that note and picks up where you left off.
 
 That's the whole loop. No dashboards, no daily upkeep.
@@ -84,7 +84,7 @@ That's the whole loop. No dashboards, no daily upkeep.
 
 | | |
 |---|---|
-| `/handoff-and-clear` | Writes one note to `.handoff/{date}-{slug}.md` with a passphrase, what was done, current state, **running state** (background processes, dev servers, open worktrees — the stuff `git log` can't tell you), next step, and files to read next. Then it's safe to `/clear`. |
+| `/handoff` | Writes one note to `.handoff/{date}-{slug}.md` with a passphrase, what was done, current state, **running state** (background processes, dev servers, open worktrees — the stuff `git log` can't tell you), next step, and files to read next. Then it's safe to `/clear`. |
 | `/handoff-list` | Scans `.handoff/` and prints a numbered list of passphrases so you can just pick one instead of re-reading every file. |
 | `SessionStart` hook | On `clear`/`compact`/`startup`, auto-injects that same numbered index into context — resuming is often just "continue #3" or naming the passphrase. |
 | `PreCompact` hook | Safety net: forces one handoff note to be written if context is about to auto-compact. **Not the primary path** — see below. |
@@ -93,7 +93,7 @@ That's the whole loop. No dashboards, no daily upkeep.
 
 Auto-compaction fires when context is nearly full — i.e., when the model is at its least reliable (thinking depth and retrieval accuracy both measurably degrade as a window fills). If you rely on the `PreCompact` hook as your only handoff trigger, you're asking the most degraded version of the model in your session to write the note the *next* session depends on.
 
-Treat `/handoff-and-clear` as something you run **proactively**, earlier in a session, whenever you're about to switch tasks or tools. Treat the `PreCompact` hook as the emergency fallback you hope never fires.
+Treat `/handoff` as something you run **proactively**, earlier in a session, whenever you're about to switch tasks or tools. Treat the `PreCompact` hook as the emergency fallback you hope never fires.
 
 ## Example note
 

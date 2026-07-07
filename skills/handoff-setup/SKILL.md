@@ -1,5 +1,5 @@
 ---
-name: cross-model-handoff-setup
+name: handoff-setup
 description: Use when starting a new project, or when converting an existing project, to enable lightweight cross-model context handoff. Sets up .handoff/ + AGENTS.md so development continues without stopping when switching between Claude Code, Codex, Gemini CLI, Antigravity, Cursor, or any AI tool.
 ---
 
@@ -79,7 +79,7 @@ When credits run out, switch to any other tool and say:
 - Don't write to any status file. Git commits are the source of truth.
 
 ### Before clearing / compacting / switching tools
-- Run `/handoff-and-clear` — writes one note to `.handoff/` with a Passphrase
+- Run `/handoff` — writes one note to `.handoff/` with a Passphrase
 
 ### Switching AI tools (e.g. out of credits)
 - In the new tool: "Read AGENTS.md and resume from the latest note in .handoff/"
@@ -91,9 +91,9 @@ This plugin ships two hooks (see `hooks/hooks.json`):
 - `PreCompact` — forces one handoff note to be written before context is compacted (safety net; see the note on trigger timing below)
 - `SessionStart` (matcher: `clear|compact|startup`) — injects a numbered index of recent `.handoff/` notes and their passphrases, so you can resume by number, filename, or passphrase without re-reading every file
 
-If you installed this as a Claude Code plugin, these are wired automatically. For other tools, translate the two hook scripts into that tool's equivalent lifecycle events, or just run `/handoff-and-clear` manually.
+If you installed this as a Claude Code plugin, these are wired automatically. For other tools, translate the two hook scripts into that tool's equivalent lifecycle events, or just run `/handoff` manually.
 
-**On trigger timing:** the `PreCompact` hook is a safety net, not the primary path. Auto-compaction (and PreCompact) fires only when context is nearly full — i.e. when the model is at its least reliable. Prefer running `/handoff-and-clear` proactively earlier in a long session, whenever you're about to switch tasks or tools, rather than waiting for the hook to force it.
+**On trigger timing:** the `PreCompact` hook is a safety net, not the primary path. Auto-compaction (and PreCompact) fires only when context is nearly full — i.e. when the model is at its least reliable. Prefer running `/handoff` proactively earlier in a long session, whenever you're about to switch tasks or tools, rather than waiting for the hook to force it.
 
 ### Step 5: Report
 
@@ -101,7 +101,7 @@ Tell the user:
 > Setup complete.
 > - `.handoff/` and `AGENTS.md` created
 > - Any AI tool can resume with: "Read AGENTS.md and resume from the latest note in .handoff/"
-> - Before clearing or switching tools: `/handoff-and-clear`
+> - Before clearing or switching tools: `/handoff`
 > - To see available resume points: `/handoff-list`
 
 ## What NOT to do

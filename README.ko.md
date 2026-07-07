@@ -55,11 +55,11 @@ Claude Code, Codex, Gemini, Antigravity처럼 여러 AI 코딩 도구를 함께 
 
 Codex, Gemini CLI, Antigravity, Cursor, IDE 자체 내장 AI 채팅 등 `/plugin`이 인식되지 않거나 `/plugin isn't available in this environment`와 같은 메시지가 뜨는 곳이라면 이 방법을 사용한다.
 
-1. [`skills/cross-model-handoff-setup/SKILL.md`](skills/cross-model-handoff-setup/SKILL.md)의 내용을 에이전트 채팅에 붙여넣는다(또는 GitHub 원본 파일 URL을 주고 읽고 따르라고 지시한다).
+1. [`skills/handoff-setup/SKILL.md`](skills/handoff-setup/SKILL.md)의 내용을 에이전트 채팅에 붙여넣는다(또는 GitHub 원본 파일 URL을 주고 읽고 따르라고 지시한다).
 2. "이 프로젝트에 cross-model handoff를 설정해줘"라고 말한다.
 3. `.handoff/`와 `AGENTS.md`가 만들어진다. 그 이후로는 전부 순수 마크다운과 일반 지시문일 뿐 — 플러그인 런타임이 필요 없다.
 
-설정이 끝나면 `/handoff-and-clear`와 `/handoff-list`도 필수는 아니다. 사용 중인 도구가 커스텀 슬래시 명령어를 지원하지 않는다면, 인계 메모를 쓰고 싶을 때 [`commands/handoff-and-clear.md`](commands/handoff-and-clear.md)의 내용을 그냥 일반 프롬프트로 붙여넣으면 된다.
+설정이 끝나면 `/handoff`와 `/handoff-list`도 필수는 아니다. 사용 중인 도구가 커스텀 슬래시 명령어를 지원하지 않는다면, 인계 메모를 쓰고 싶을 때 [`commands/handoff.md`](commands/handoff.md)의 내용을 그냥 일반 프롬프트로 붙여넣으면 된다.
 
 ### 문제 해결: `/plugin`은 실제로 어디서 작동하는가
 
@@ -75,7 +75,7 @@ Codex, Gemini CLI, Antigravity, Cursor, IDE 자체 내장 AI 채팅 등 `/plugin
 설치 후(방법 A든 B든), 전체 흐름은 세 순간뿐이다.
 
 1. **평소처럼 작업한다.** 아무것도 할 필요 없다 — 유지해야 할 상태 파일도, 업데이트해야 할 위키도 없다. git 커밋이 유일한 진실이다.
-2. **컨텍스트를 지우거나 도구를 전환하려는 순간.** `/handoff-and-clear`를 실행한다(방법 B라면 "인계 메모를 써줘"라고 말하기만 하면 된다). 암구호가 담긴 메모 하나가 `.handoff/`에 작성된다. 컨텍스트가 커질 때까지 기다리지 말고 능동적으로 할 것.
+2. **컨텍스트를 지우거나 도구를 전환하려는 순간.** `/handoff`를 실행한다(방법 B라면 "인계 메모를 써줘"라고 말하기만 하면 된다). 암구호가 담긴 메모 하나가 `.handoff/`에 작성된다. 컨텍스트가 커질 때까지 기다리지 말고 능동적으로 할 것.
 3. **어떤 도구에서든 다시 돌아왔을 때.** "AGENTS.md를 읽고 이어서 해줘"라고 말한다(어느 스레드였는지 모르겠다면 `/handoff-list`). 암구호나 번호를 말하면, 에이전트가 그 메모를 읽고 멈췄던 지점부터 이어간다.
 
 이게 전체 흐름이다. 대시보드도, 매일 해야 할 유지보수도 없다.
@@ -84,7 +84,7 @@ Codex, Gemini CLI, Antigravity, Cursor, IDE 자체 내장 AI 채팅 등 `/plugin
 
 | | |
 |---|---|
-| `/handoff-and-clear` | `.handoff/{date}-{slug}.md`에 메모 하나를 작성한다. 암구호, 완료한 작업, 현재 상태, **실행 상태**(백그라운드 프로세스, 개발 서버, 열려 있는 worktree 등 — `git log`로는 알 수 없는 정보), 다음 단계, 다음에 읽어야 할 파일을 포함한다. 작성 후에는 `/clear`해도 안전하다. |
+| `/handoff` | `.handoff/{date}-{slug}.md`에 메모 하나를 작성한다. 암구호, 완료한 작업, 현재 상태, **실행 상태**(백그라운드 프로세스, 개발 서버, 열려 있는 worktree 등 — `git log`로는 알 수 없는 정보), 다음 단계, 다음에 읽어야 할 파일을 포함한다. 작성 후에는 `/clear`해도 안전하다. |
 | `/handoff-list` | `.handoff/`를 스캔해 번호가 매겨진 암구호 목록을 출력한다. 모든 파일을 다시 읽는 대신 번호 하나만 고르면 된다. |
 | `SessionStart` 훅 | `clear`/`compact`/`startup` 시점에, 동일한 번호 인덱스를 컨텍스트에 자동으로 주입한다 — 재개는 흔히 "3번 이어서 해줘"로 충분하다. |
 | `PreCompact` 훅 | 안전망: 컨텍스트가 자동 압축되기 직전에 인계 메모 작성을 강제한다. **주된 경로는 아니다** — 아래 참고. |
@@ -93,7 +93,7 @@ Codex, Gemini CLI, Antigravity, Cursor, IDE 자체 내장 AI 채팅 등 `/plugin
 
 자동 압축은 컨텍스트가 거의 가득 찼을 때 발동한다 — 즉 모델이 가장 신뢰할 수 없는 상태일 때(윈도우가 채워질수록 사고의 깊이와 검색 정확도 모두 실측으로 저하된다). `PreCompact` 훅만을 유일한 인계 트리거로 삼는다면, 다음 세션이 의존하게 될 메모를, 해당 세션에서 가장 저하된 상태의 모델에게 작성시키는 셈이다.
 
-`/handoff-and-clear`는 세션 초반에, 작업이나 도구를 전환하려 할 때마다 **능동적으로** 실행하는 것으로 다뤄라. `PreCompact` 훅은 절대 발동하지 않기를 바라는 비상용 안전장치로 다뤄라.
+`/handoff`는 세션 초반에, 작업이나 도구를 전환하려 할 때마다 **능동적으로** 실행하는 것으로 다뤄라. `PreCompact` 훅은 절대 발동하지 않기를 바라는 비상용 안전장치로 다뤄라.
 
 ## 메모 예시
 

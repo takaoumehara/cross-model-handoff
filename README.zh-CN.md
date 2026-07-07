@@ -55,11 +55,11 @@
 
 如果你在使用 Codex、Gemini CLI、Antigravity、Cursor、或某个 IDE 自带的 AI 聊天,又或者在任何 `/plugin` 不被识别、或提示类似 `/plugin isn't available in this environment` 的地方,就用这个方法。
 
-1. 把 [`skills/cross-model-handoff-setup/SKILL.md`](skills/cross-model-handoff-setup/SKILL.md) 的内容粘贴到你的 agent 聊天窗口里(或者直接把 GitHub 的原始文件链接给它,让它读取并照做)。
+1. 把 [`skills/handoff-setup/SKILL.md`](skills/handoff-setup/SKILL.md) 的内容粘贴到你的 agent 聊天窗口里(或者直接把 GitHub 的原始文件链接给它,让它读取并照做)。
 2. 告诉它:"在这个项目里设置 cross-model handoff。"
 3. 它会为你创建 `.handoff/` 和 `AGENTS.md`。之后的一切都只是纯 Markdown 和普通指令——不需要插件运行时。
 
-设置完成后,`/handoff-and-clear` 和 `/handoff-list` 也不是必须的。如果你的工具不支持自定义斜杠命令,想写交接笔记的时候,直接把 [`commands/handoff-and-clear.md`](commands/handoff-and-clear.md) 的内容当作普通提示词粘贴进去就行。
+设置完成后,`/handoff` 和 `/handoff-list` 也不是必须的。如果你的工具不支持自定义斜杠命令,想写交接笔记的时候,直接把 [`commands/handoff.md`](commands/handoff.md) 的内容当作普通提示词粘贴进去就行。
 
 ### 故障排查:`/plugin` 到底在哪里能用?
 
@@ -75,7 +75,7 @@
 安装好之后(方式 A 或 B 都行),整个流程只有三个时刻。
 
 1. **正常工作。** 什么都不用做——没有要维护的状态文件,也没有 wiki 要更新。git commit 就是唯一的真相来源。
-2. **准备清空上下文或切换工具时。** 运行 `/handoff-and-clear`(方式 B 的话,直接说"写一份交接笔记"就行)。会往 `.handoff/` 写一份带口令的笔记。要主动去做——不要等到上下文已经很臃肿了才做。
+2. **准备清空上下文或切换工具时。** 运行 `/handoff`(方式 B 的话,直接说"写一份交接笔记"就行)。会往 `.handoff/` 写一份带口令的笔记。要主动去做——不要等到上下文已经很臃肿了才做。
 3. **回来的时候(用任何工具)。** 说"读一下 AGENTS.md,然后恢复"(如果不确定是哪条线程,就用 `/handoff-list`)。说出口令或编号,agent 就会读那份笔记,从你离开的地方继续。
 
 就这三步,没有仪表盘,也不需要每天维护什么。
@@ -84,7 +84,7 @@
 
 | | |
 |---|---|
-| `/handoff-and-clear` | 向 `.handoff/{date}-{slug}.md` 写一份笔记,包含口令、已完成的工作、当前状态、**运行状态**(后台进程、开发服务器、打开的 worktree 等 —— 这些是 `git log` 看不出来的)、下一步、以及接下来要读的文件。写完之后就可以安全地 `/clear` 了。 |
+| `/handoff` | 向 `.handoff/{date}-{slug}.md` 写一份笔记,包含口令、已完成的工作、当前状态、**运行状态**(后台进程、开发服务器、打开的 worktree 等 —— 这些是 `git log` 看不出来的)、下一步、以及接下来要读的文件。写完之后就可以安全地 `/clear` 了。 |
 | `/handoff-list` | 扫描 `.handoff/` 并打印出带编号的口令列表,直接选一个就行,不用把每个文件都重新读一遍。 |
 | `SessionStart` hook | 在 `clear`/`compact`/`startup` 时,自动把同样的编号索引注入上下文 —— 恢复往往只需要说"继续第 3 个"。 |
 | `PreCompact` hook | 安全网:在上下文即将被自动压缩前,强制写一份交接笔记。**这不是主要路径** —— 见下文。 |
@@ -93,7 +93,7 @@
 
 自动压缩是在上下文几乎被填满时才触发 —— 也就是模型最不可靠的时候(随着窗口被填满,思考深度和检索准确率都会实测下降)。如果你只依赖 `PreCompact` hook 作为唯一的交接触发点,就等于是让本次会话中状态最差的模型,去写下一次会话要依赖的那份笔记。
 
-把 `/handoff-and-clear` 当作**主动**执行的操作 —— 在会话早期,每次准备切换任务或工具时就去运行它。把 `PreCompact` hook 当作你希望永远不会触发的应急后备方案。
+把 `/handoff` 当作**主动**执行的操作 —— 在会话早期,每次准备切换任务或工具时就去运行它。把 `PreCompact` hook 当作你希望永远不会触发的应急后备方案。
 
 ## 笔记示例
 
