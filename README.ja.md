@@ -8,92 +8,62 @@
   <a href="README.ko.md">한국어</a>
 </p>
 
-複数のAIツールをまたいで開発するための、合言葉ベースのセッション引き継ぎ。コンテキストをクリアする前・ツールを切り替える前に1本のノートを書くだけで、名前を言うだけで即座に再開できます。Claude Code、Codex、Gemini CLI、Antigravity、Cursor など `AGENTS.md` を読むツールならどれでも対応します。
+コンテキストをクリアする前・AIツールを切り替える前に、ノートを1本書く。**合言葉(passphrase)**を言うだけで即座に再開できます。Claude Code、Codex、Gemini CLI、Antigravity、Cursor など `AGENTS.md` を読むツールならどれでも。
 
 ## 課題
 
-Claude Code・Codex・Gemini・Antigravity のように複数のAIコーディングツールを併用していると、必ず次の2つに直面します。
+複数のAIコーディングツールを併用すると、必ず2つに悩まされます。
 
-- **クレジットがセッション途中で切れる。** 別のツールに切り替えると、コンテキストが失われる。何をしていたかを説明し直すコストは、やり直すのとほぼ変わらない。
-- **コンテキストウィンドウが肥大化する。** セッションが長引くほどモデルの精度は静かに落ちていく — ウィンドウが埋まるほど検索精度は実測で下がる。自動圧縮に頼るということは、モデルが最も信頼できない瞬間に要約が書かれるということ。
+- **クレジットが作業途中で切れる。** ツールを切り替えるとコンテキストが失われる。説明し直すコストは、やり直すのと変わらない。
+- **コンテキストが肥大化する。** セッションが長引くほどモデルの精度は落ちる。自動圧縮を待つと、モデルが**最も劣化した瞬間**に要約が書かれる。
 
-こうした問題への対処は往々にして重い — Wiki、ステータスドキュメントのプロトコル、セッション間で同期するVaultなど。それ自体が税金になる。ある報告では、実際の作業に入る前に状態ファイルを読むだけでセッションあたり65,000トークン以上を消費していたという。
+多くの対策は重い — Wiki、ステータス文書、同期Vault。これは違います。プレーンなファイル3つだけ。
 
-## 発想
+## 仕組み
 
-外部システムなしの、3つの小さな仕組みだけ。
-
-1. **`.handoff/`** — プロジェクトルート直下のプレーンなMarkdownフォルダ。クリアやツール切り替えの直前に、セッションごとに短いノートを1本書く。
-2. **合言葉(Passphrase)** — 各ノートに含まれる、短く覚えやすいフレーズ。「あのスレッドから再開して」と言えるようになる — どのファイルが関係あるか推測する必要がない。同じブランチで並行セッションが存在する場合に効いてくる。
-3. **`AGENTS.md`** — 60以上のAIコーディングツールが既に読んでいる、たった1つの設定ファイル。「まず `.handoff/` の最新ノートを読め」「レガシーな状態ファイルには触れるな」「離れる前にノートを1本書け」と、どのツールにも伝える。
-
-ここにあるものはClaude専用のものは何もない。`AGENTS.md` と `.handoff/*.md` は、gitリポジトリの中の単なるファイル — ファイルを読めるツールなら何でも使える。
+1. **`.handoff/`** — プロジェクトルート直下、セッションごとに短いMarkdownノートを1本。
+2. **合言葉** — 各ノートに書く覚えやすいフレーズ。名前で**正しい**スレッドを再開できる(同じブランチで並行セッションがある時に効く)。
+3. **`AGENTS.md`** — 60以上のAIツールが既に読む設定ファイル。どのツールにも最新ノートを指し示す。Claude専用の要素はゼロ。
 
 ## インストール
 
-インストール方法は2通りあり、どちらが使えるかは「どこでコマンドを打っているか」に依存する。`/plugin` が期待通りに動かない場合は、下のトラブルシューティング表を読んでほしい — たいていの場合、そこが実際のClaude Code CLIランタイムではない場所だということを意味する。
+**Claude Code(プラグイン)。** 素のターミナルではなく、`claude` セッションの中で:
 
-### 方法A — Claude Codeプラグイン(ターミナル)
+```
+/plugin marketplace add takaoumehara/cross-model-handoff
+/plugin install cross-model-handoff@cross-model-handoff
+```
 
-これが公式にサポートされている経路。本物のClaude Code CLIセッションの中でしか動かない — 素のシェルでは動かないし、IDEに組み込まれたチャットパネルの中でも確実に動くとは限らない(下の表を参照)。
+**その他のツール(手動)。** [`skills/handoff-setup/SKILL.md`](skills/handoff-setup/SKILL.md) の中身をエージェントに貼り付けて「ここに cross-model handoff をセットアップして」と言うだけ。`.handoff/` と `AGENTS.md` が作られます。プラグインの仕組みは不要 — Codex、Gemini CLI、Antigravity、Cursor、どのIDEチャットでも動きます。
 
-1. ターミナルを開いてClaude Codeを起動する:
-   ```bash
-   claude
-   ```
-   `/plugin` は、この対話セッションの**中で**打つコマンドであって、シェルコマンドではない。zsh/bashのプロンプトで直接 `/plugin marketplace add ...` を実行したり(あるいは `bash` にパイプしたり)すると、`zsh: no such file or directory: /plugin` のようなエラーになる。このエラーが出るということは、そもそもClaude Codeセッションに入っていないということ。
+<details>
+<summary><code>/plugin</code> が動かない?</summary>
 
-2. Claude Codeセッションの中に入ったら、以下を実行する:
-   ```
-   /plugin marketplace add takaoumehara/cross-model-handoff
-   /plugin install cross-model-handoff@cross-model-handoff
-   ```
-
-これで2つのコマンドと2つのフックが自動的に配線される(下記参照)。
-
-### 方法B — 手動セットアップ(どこでも動く、プラグインの仕組み不要)
-
-Codex、Gemini CLI、Antigravity、Cursor、IDE自前のAIチャットなど、`/plugin` が認識されない場所や「`/plugin isn't available in this environment`」のようなメッセージが出る場所ではこちらを使う。
-
-1. [`skills/handoff-setup/SKILL.md`](skills/handoff-setup/SKILL.md) の中身をエージェントのチャットに貼り付ける(あるいはGitHubの生ファイルURLを渡して読んで従うよう指示する)
-2. 「このプロジェクトにcross-model handoffをセットアップして」と伝える
-3. `.handoff/` と `AGENTS.md` が作られる。それ以降は全てプレーンなMarkdownと普通の指示文 — プラグインランタイムは不要。
-
-セットアップ後は `/handoff` や `/handoff-list` も必須ではない。使っているツールがカスタムスラッシュコマンドに対応していなければ、ハンドオフノートを書きたい時に [`commands/handoff.md`](commands/handoff.md) の中身をそのままプロンプトとして貼ればよい。
-
-### トラブルシューティング: `/plugin` は実際どこで動くのか
-
-| どこで打ったか | 何が起きるか | どうすればよいか |
-|---|---|---|
-| 素のターミナルプロンプト(zsh/bash)、Claude Codeの外 | `zsh: no such file or directory: /plugin` | `/plugin` はシェルコマンドではない。まず `claude` を実行してから、そのセッションの中で打つ(方法A) |
-| 本物のClaude Code CLIセッションの中(`claude` 実行後) | 動く | これが意図された経路 |
-| 本物のClaude Codeエンジンではない、IDE自前のAIチャット(IDEやバージョンによって挙動が異なる — 「Claude Code」パネルに見えても、内部は別のエージェント基盤ということがある) | 「`/plugin isn't available in this environment`」と言われるか、そもそもコマンドとして認識されない | 方法Bを使う — プラグインの仕組みに依存しない |
-| Antigravityに組み込まれた「Claude Code」パネル | `/plugin isn't available in this environment` | 想定通り — そのパネルはAntigravity自身のエージェント基盤で動いており、Claude Codeのプラグインランタイムではない。方法Bを使う |
-
-## 使い方(日常の流れ)
-
-インストール後(方法AでもBでも)、ワークフローは3つの場面だけ。
-
-1. **普段通り作業する。** 何もしなくていい — 維持すべき状態ファイルもWikiもない。git commitが唯一の真実。
-2. **コンテキストをクリアする前・ツールを切り替える前。** `/handoff` を実行する(方法Bの場合は「ハンドオフノートを書いて」と言うだけ)。合言葉付きのノートが `.handoff/` に1本書かれる。コンテキストが肥大化するのを待たず、能動的に行うこと。
-3. **戻ってきた時(どのツールでも)。** 「AGENTS.mdを読んで再開して」と言う(どのスレッドか分からなければ `/handoff-list`)。合言葉か番号を伝えれば、エージェントがそのノートを読んで続きから再開する。
-
-これが全ての流れ。ダッシュボードも日次のメンテナンスも不要。
-
-## 手に入るもの
-
-| | |
+| どこで打ったか | 対処 |
 |---|---|
-| `/handoff` | `.handoff/{date}-{slug}.md` にノートを1本書く。合言葉、やったこと、現在の状態、**Running state**(バックグラウンドプロセス、devサーバー、開いているworktreeなど、`git log` では分からない情報)、次の一手、次に読むべきファイルを含む。書いたあとは `/clear` して安全。 |
-| `/handoff-list` | `.handoff/` をスキャンし、合言葉を番号付きリストで表示。ファイルを全部読み直す代わりに、番号を選ぶだけで済む。 |
-| `SessionStart` フック | `clear`/`compact`/`startup` 時に、同じ番号付きインデックスを自動的にコンテキストへ注入。再開は「3番を続けて」で済むことが多い。 |
-| `PreCompact` フック | 安全網:コンテキストが自動圧縮される直前に、ハンドオフノートの作成を強制する。**主経路ではない** — 下記参照。 |
+| 素のターミナル(`zsh: no such file or directory: /plugin`) | シェルコマンドではない。先に `claude` を実行し、そのセッションの中で打つ。 |
+| IDE内蔵AIチャット / Antigravityパネル(`/plugin isn't available in this environment`) | そのパネルは本物のClaude Codeランタイムではない。上の手動セットアップを使う。 |
+</details>
 
-## 発火タイミングについて(重要)
+## コマンド
 
-自動圧縮が発火するのは、コンテキストがほぼ埋まった時 — つまりモデルが最も信頼できない状態の時(ウィンドウが埋まるほど、思考の深さも検索精度も実測で劣化する)。`PreCompact` フックだけをハンドオフのトリガーにしていると、次のセッションが依存することになるノートを、そのセッション内で最も劣化したモデルに書かせることになる。
+| コマンド | 役割 |
+|---|---|
+| `/handoff` | `.handoff/` にノートを1本書く — 合言葉、やったこと、現在の状態、**Running state**(バックグラウンドプロセス・devサーバー・開いているworktreeなど、`git log` では分からない情報)、次の一手。書いたら `/clear` して安全。 |
+| `/handoff-list` | `.handoff/` の合言葉を一覧表示。選ぶだけで再開できる。 |
+| `/handoff-setup` | プロジェクトに `.handoff/` + `AGENTS.md` を用意する。プロジェクトごとに1回。 |
 
-`/handoff` は、セッションの早い段階で、タスクやツールを切り替えようとするたびに**能動的に**実行するものとして扱うこと。`PreCompact` フックは、発火しないことを願う緊急時のフォールバックとして扱うこと。
+加えて2つのフック — `SessionStart`(再開時に合言葉を自動一覧表示)と `PreCompact`(安全網)。どちらもハーネス側だけで動き、コンテキストコストはゼロ。
+
+## 日常の流れ
+
+1. **普段通り作業する。** 維持すべきものはない。git commitが唯一の真実。
+2. **クリア・ツール切り替えの前:** `/handoff`。能動的に — コンテキストが埋まるのを待たない。
+3. **戻ってきた時(どのツールでも):** 「AGENTS.mdを読んで再開して」(または `/handoff-list`)と言い、合言葉を伝える。
+
+## なぜ能動的に書くのか
+
+自動圧縮はコンテキストがほぼ埋まった時 — モデルが最も信頼できない時 — にしか発火しません。`PreCompact` フックだけを頼りにすると、次のセッションが依存するノートを、**最も劣化した**モデルに書かせることになります。`/handoff` は早めに実行し、フックは発火しないことを願う保険として扱いましょう。
 
 ## ノートの例
 
@@ -103,29 +73,27 @@ Codex、Gemini CLI、Antigravity、Cursor、IDE自前のAIチャットなど、`
 Passphrase: "shoesは緑、次はlanding Moments"
 
 ## What was done
-- shoes momentのデバイスセレクターを実装 (components/moments/moment-frame.tsx)
-- P3 browse画面のcx()型エラーを修正
+- shoes momentのデバイスセレクター実装 (components/moments/moment-frame.tsx)
 
 ## Current state
-- Verified: typecheck通過、visual parityスクリプト green
+- Verified: typecheck通過、visual parity green
 - Not verified: モバイルブレークポイント未検証
 
 ## Running state
 - Background processes: none
 - Dev servers/ports: none
-- Open worktrees/branches: .claude/worktrees/cg-pipeline (作業中、削除しないこと)
+- Open worktrees: .claude/worktrees/cg-pipeline (作業中、削除しないこと)
 
 ## Next step
 1. landing pageのMomentsバンドをライブデータに接続
 
 ## Files to read next
 - components/moments/moment-frame.tsx
-- app/[locale]/moments/page.tsx
 ```
 
-## なぜ1つのツールの内蔵メモリだけで済ませないのか
+## なぜツール内蔵メモリではダメなのか
 
-引き継がれないから。Claude Codeのプロジェクトメモリは、クレジット切れでCodexに切り替えた瞬間に役に立たなくなる。`AGENTS.md` + `.handoff/` は、どこでも動く最小の仕組み — 単なるファイルなので、ツールごとの統合を作ったり維持したりする必要がない。
+引き継がれないからです。Claude Codeのメモリは、Codexに切り替えた瞬間に役立たずになる。`AGENTS.md` + `.handoff/` は単なるファイル — どこでも動き、ツールごとの統合を作る必要がありません。
 
 ## ライセンス
 
