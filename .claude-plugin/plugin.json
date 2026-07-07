@@ -1,0 +1,21 @@
+{
+  "name": "cross-model-handoff",
+  "version": "1.0.0",
+  "description": "Passphrase-based, LLM-agnostic session handoff. Write one note before /clear or a context switch, resume instantly by name — across Claude Code, Codex, Gemini CLI, Antigravity, Cursor, or any AGENTS.md-aware tool.",
+  "author": {
+    "name": "Takao Umehara",
+    "url": "https://github.com/takaoumehara"
+  },
+  "homepage": "https://github.com/takaoumehara/cross-model-handoff",
+  "repository": "https://github.com/takaoumehara/cross-model-handoff",
+  "license": "MIT",
+  "keywords": [
+    "handoff",
+    "context-management",
+    "multi-agent",
+    "cross-model",
+    "session-resume",
+    "AGENTS.md",
+    "passphrase"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "cross-model-handoff",
+  "owner": {
+    "name": "Takao Umehara",
+    "url": "https://github.com/takaoumehara"
+  },
+  "plugins": [
+    {
+      "name": "cross-model-handoff",
+      "source": "./",
+      "description": "Passphrase-based, LLM-agnostic session handoff for Claude Code, Codex, Gemini CLI, Antigravity, and more.",
+      "version": "1.0.0",
+      "author": "Takao Umehara"
+    }
+  ]
+}
