@@ -70,6 +70,16 @@
 | 并非真正 Claude Code 引擎的、IDE 自带的 AI 聊天(因 IDE 和版本而异——有些界面显示"Claude Code"面板,但底层其实是另一个 agent 框架) | 可能提示 `/plugin isn't available in this environment`,或者根本不识别这个命令 | 使用方式 B —— 它不依赖任何插件系统 |
 | Antigravity 内嵌的 "Claude Code" 面板 | `/plugin isn't available in this environment` | 这是预期行为——那个面板运行的是 Antigravity 自己的 agent 框架,而不是 Claude Code 的插件运行时。使用方式 B |
 
+## 日常怎么用
+
+安装好之后(方式 A 或 B 都行),整个流程只有三个时刻。
+
+1. **正常工作。** 什么都不用做——没有要维护的状态文件,也没有 wiki 要更新。git commit 就是唯一的真相来源。
+2. **准备清空上下文或切换工具时。** 运行 `/handoff-and-clear`(方式 B 的话,直接说"写一份交接笔记"就行)。会往 `.handoff/` 写一份带口令的笔记。要主动去做——不要等到上下文已经很臃肿了才做。
+3. **回来的时候(用任何工具)。** 说"读一下 AGENTS.md,然后恢复"(如果不确定是哪条线程,就用 `/handoff-list`)。说出口令或编号,agent 就会读那份笔记,从你离开的地方继续。
+
+就这三步,没有仪表盘,也不需要每天维护什么。
+
 ## 你会得到什么
 
 | | |

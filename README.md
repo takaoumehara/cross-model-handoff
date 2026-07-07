@@ -70,6 +70,16 @@ Once set up, `/handoff-and-clear` and `/handoff-list` aren't required either. If
 | An IDE's own built-in AI chat that isn't the real Claude Code engine (varies by IDE and version — some show a "Claude Code" panel that's actually a different agent harness underneath) | May say `/plugin isn't available in this environment`, or may just not recognize it as a command | Use Method B — it doesn't depend on any plugin system. |
 | Antigravity's embedded "Claude Code" panel | `/plugin isn't available in this environment` | Expected — that panel runs Antigravity's own agent harness, not the Claude Code plugin runtime. Use Method B. |
 
+## How to use it (day to day)
+
+Once installed (Method A or B above), the whole workflow is three moments:
+
+1. **You're working normally.** Nothing to do — no state file to maintain, no wiki to update. Git commits are the source of truth.
+2. **You're about to clear context or switch tools.** Run `/handoff-and-clear` (or, on Method B, just say "write a handoff note"). It writes one note to `.handoff/` with a passphrase. Do this proactively — don't wait for context to get huge.
+3. **You're back, in any tool.** Say "read AGENTS.md and resume" (or `/handoff-list` if you're not sure which thread you were on). Name the passphrase, or the number, and the agent reads that note and picks up where you left off.
+
+That's the whole loop. No dashboards, no daily upkeep.
+
 ## What you get
 
 | | |

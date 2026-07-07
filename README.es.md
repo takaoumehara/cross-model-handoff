@@ -70,6 +70,16 @@ Una vez configurado, `/handoff-and-clear` y `/handoff-list` tampoco son obligato
 | El chat de IA propio de un IDE que no es el motor real de Claude Code (varía según el IDE y la versión — algunos muestran un panel "Claude Code" que en realidad usa otro motor de agente por debajo) | Puede decir `/plugin isn't available in this environment`, o simplemente no reconocerlo como comando | Usa el Método B — no depende de ningún sistema de plugins |
 | El panel "Claude Code" integrado en Antigravity | `/plugin isn't available in this environment` | Esperado — ese panel ejecuta el propio motor de agente de Antigravity, no el runtime de plugins de Claude Code. Usa el Método B |
 
+## Cómo usarlo (en el día a día)
+
+Una vez instalado (Método A o B), todo el flujo se reduce a tres momentos.
+
+1. **Trabajas con normalidad.** No hay nada que hacer — ningún archivo de estado que mantener, ninguna wiki que actualizar. Los commits de git son la única fuente de verdad.
+2. **Estás a punto de limpiar el contexto o cambiar de herramienta.** Ejecuta `/handoff-and-clear` (o, con el Método B, simplemente di "escribe una nota de traspaso"). Escribe una nota en `.handoff/` con una frase de paso. Hazlo de forma proactiva — no esperes a que el contexto se sature.
+3. **Vuelves, en cualquier herramienta.** Di "lee AGENTS.md y retoma" (o `/handoff-list` si no estás seguro de en qué hilo estabas). Nombra la frase de paso, o el número, y el agente lee esa nota y retoma justo donde lo dejaste.
+
+Eso es todo el ciclo. Sin paneles de control, sin mantenimiento diario.
+
 ## Qué obtienes
 
 | | |
