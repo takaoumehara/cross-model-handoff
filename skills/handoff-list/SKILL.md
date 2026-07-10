@@ -1,4 +1,5 @@
 ---
+name: handoff-list
 description: List handoff notes in .handoff/ for this project so you can pick one to resume
 ---
 

@@ -1,4 +1,5 @@
 ---
+name: handoff
 description: Write ONE handoff note to .handoff/, then it's safe to /clear
 ---
 
