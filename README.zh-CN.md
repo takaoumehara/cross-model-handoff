@@ -70,7 +70,7 @@
 ```markdown
 # 2026-07-07 — shoes device UI
 
-Passphrase: "shoes is green, next is landing Moments"
+Passphrase: "shoes-app: shoes is green, next is landing Moments"
 
 ## What was done
 - shoes moment 的设备选择器 (components/moments/moment-frame.tsx)

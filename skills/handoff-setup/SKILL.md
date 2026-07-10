@@ -42,7 +42,7 @@ Read by Claude Code, Codex, Gemini CLI, Antigravity, Cursor, Copilot, Windsurf, 
 
 ## Resuming Work (READ THIS FIRST)
 
-1. Read the latest file in `.handoff/` — it contains: Passphrase (short memorable phrase for this thread), what was done, current state, running state, next step.
+1. Read the latest file in `.handoff/` — it contains: Passphrase (formatted `{repo-name}: {memorable phrase}`, so the project is obvious at a glance), what was done, current state, running state, next step.
 2. If `.handoff/` has multiple notes, ask which passphrase/thread to resume — don't assume the newest is right (parallel sessions on the same branch can exist).
 3. If `.handoff/` is empty: run `git log --oneline -10` and `git diff`, then start working.
 4. Do NOT read legacy status files (e.g. GLOBAL_STATUS.md, TASK_BOARD.md) if present — they waste context; this project uses `.handoff/` instead.
@@ -51,7 +51,7 @@ Read by Claude Code, Codex, Gemini CLI, Antigravity, Cursor, Copilot, Windsurf, 
 
 - git commits are the only source of truth during work
 - Do NOT write to any other state file during work
-- When context gets heavy or the session ends: write ONE note to `.handoff/{date}-{slug}.md` with Passphrase, state, running state, next step. Then it's safe to clear/switch tools.
+- When context gets heavy or the session ends: write ONE note to `.handoff/{date}-{slug}.md` with Passphrase (`{repo-name}: {memorable phrase}` — repo name first, always), state, running state, next step. Then it's safe to clear/switch tools.
 - Keep handoff notes under 80 lines.
 
 ## Switching models mid-work
@@ -110,6 +110,7 @@ Tell the user:
 - Do NOT make session-start reads mandatory across multiple files
 - Do NOT write progress to an external tool (wiki, vault, doc) during the session — git commits are the source of truth
 - Do NOT skip the passphrase — it's what makes resuming a specific thread reliable when parallel sessions exist
+- Do NOT drop the repo name from the passphrase — it must lead with `{repo-name}: ` so that, across many projects, you can always tell which one a note belongs to
 
 ## Why `.handoff/` + `AGENTS.md` instead of a heavier protocol
 
@@ -123,7 +124,7 @@ Tell the user:
 ```markdown
 # {date} — {task description}
 
-Passphrase: "{memorable phrase}"
+Passphrase: "{repo-name}: {memorable phrase}"   # repo name FIRST — so you never forget which project this thread was
 
 ## What was done
 - ...

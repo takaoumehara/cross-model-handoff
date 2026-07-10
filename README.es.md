@@ -70,7 +70,7 @@ La auto-compactación solo se activa cuando el contexto está casi lleno — cua
 ```markdown
 # 2026-07-07 — shoes device UI
 
-Passphrase: "shoes is green, next is landing Moments"
+Passphrase: "shoes-app: shoes is green, next is landing Moments"
 
 ## What was done
 - Selector de dispositivo para el moment de shoes (components/moments/moment-frame.tsx)

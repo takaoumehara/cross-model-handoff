@@ -22,7 +22,7 @@ Most fixes are heavy — a wiki, a status-doc protocol, a synced vault. This isn
 ## How it works
 
 1. **`.handoff/`** — one short markdown note per session, in the project root.
-2. **A passphrase** — a memorable phrase in each note, so you resume the *right* thread by name (matters when parallel sessions share a branch).
+2. **A passphrase** — formatted `{repo-name}: {memorable phrase}` in each note, so you resume the *right* thread by name and always know which project it belongs to (matters when parallel sessions share a branch, or when you juggle many repos).
 3. **`AGENTS.md`** — the one config file 60+ AI tools already read. It points any tool at the latest note. Nothing here is Claude-specific.
 
 ## Install
@@ -70,7 +70,7 @@ Auto-compaction only fires when context is nearly full — when the model is lea
 ```markdown
 # 2026-07-07 — shoes device UI
 
-Passphrase: "shoes is green, next is landing Moments"
+Passphrase: "shoes-app: shoes is green, next is landing Moments"
 
 ## What was done
 - Device selector for shoes moment (components/moments/moment-frame.tsx)

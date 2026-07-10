@@ -3,7 +3,7 @@ name: handoff-list
 description: List handoff notes in .handoff/ for this project so you can pick one to resume
 ---
 
-Scan `.handoff/*.md` in the project root, most recent first (limit ~10). For each file, extract the passphrase line (match `Passphrase:` or the legacy label `合言葉:`) and the date/slug from the filename.
+Scan `.handoff/*.md` in the project root, most recent first (limit ~10). For each file, extract the passphrase line (match `Passphrase:` or the legacy label `合言葉:`) and the date/slug from the filename. Current-format passphrases begin with the repo name (`{repo-name}: {phrase}`); show it verbatim so the project is obvious at a glance.
 
 Print a numbered list like:
 ```
