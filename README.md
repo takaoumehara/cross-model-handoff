@@ -8,8 +8,71 @@
   <a href="README.ko.md">한국어</a>
 </p>
 
-Write one note before you clear context or switch AI tools. Resume instantly by naming its **passphrase** — in Claude Code, Codex, Gemini CLI, Antigravity, Cursor, or anything else that reads `AGENTS.md`.
+Write one note before you clear context or switch AI tools. Resume by pasting the copy-ready Chat resume prompt into the next AI session — in Claude Code, Codex, Gemini CLI, Antigravity, Cursor, or anything else that reads `AGENTS.md`.
 
+## For everyone
+
+You do not need to be an engineer to use this.
+
+### When to use it
+
+Use cross-model-handoff when:
+
+- You are about to clear a long AI chat.
+- Your credits or context are running low.
+- You want to switch from Claude Code to Codex, Gemini, or another AI tool.
+- You want to stop for today and continue later.
+
+### How to use it
+
+1. While your work is still fresh, run /handoff.
+2. It writes one small note and prints two copy-ready outputs.
+3. Copy the Chat resume prompt.
+4. Clear the chat or switch tools.
+5. Paste the prompt into the next AI session.
+
+The next AI gets the goal, current state, exact handoff file, next action, and the first files to read. It does not need to search through old notes or ask you which passphrase to use. You only need /handoff-list when you want to choose between multiple older threads yourself.
+
+### What you will see
+
+The output includes a prompt like this:
+
+~~~text
+Please resume the next task.
+
+Project: my-app
+Handoff file: .handoff/2026-07-20-fix-login.md
+Goal: Fix the login error
+State: The bug is reproduced; the fix is not verified
+Next: Run the login test and inspect the failure
+Read first: tests/login.test.ts; src/auth/login.ts
+Running: none
+
+Start with Next. Do not search other .handoff files.
+~~~
+
+Paste that block into the next AI chat. The AI can open the named handoff file only if it needs more detail.
+
+A second output is provided for terminal users:
+
+~~~bash
+npx cross-model-handoff resume --file .handoff/2026-07-20-fix-login.md
+~~~
+
+This command is the CLI entry point for environments that support it. If the CLI is not available, use the Chat resume prompt above.
+
+## For engineers
+
+The handoff note contains a short Resume Capsule at the top, followed by the detailed session record. The Capsule contains:
+
+- Project and exact handoff file
+- Repo-prefixed passphrase
+- Goal and current state
+- One concrete next action
+- Files to read first
+- Running processes, servers, ports, and worktrees
+
+The detailed note remains the source of truth and stays under 80 lines. Existing notes without a Resume Capsule still work through their passphrase and /handoff-list.
 ## The problem
 
 Working across multiple AI coding tools, two things bite constantly:
@@ -49,8 +112,8 @@ Most fixes are heavy — a wiki, a status-doc protocol, a synced vault. This isn
 
 | Command | What it does |
 |---|---|
-| `/handoff` | Write one note to `.handoff/` — passphrase, what was done, current state, **running state** (background processes, dev servers, open worktrees — what `git log` can't tell you), next step. Then it's safe to `/clear`. |
-| `/handoff-list` | List the passphrases in `.handoff/` so you can pick one to resume. |
+| `/handoff` | Write one note to `.handoff/`, then print a copy-ready Chat resume prompt and terminal command. The note includes passphrase, what was done, current state, **running state**, and next step. Then it's safe to `/clear`. |
+| `/handoff-list` | Fallback: list older passphrases in `.handoff/` so you can choose a thread manually. |
 | `/handoff-setup` | Scaffold `.handoff/` + `AGENTS.md` in a project. Run once per project. |
 
 Plus two hooks — `SessionStart` (auto-lists your passphrases on resume) and `PreCompact` (a safety net). Both are harness-only: zero added context cost.
@@ -59,7 +122,7 @@ Plus two hooks — `SessionStart` (auto-lists your passphrases on resume) and `P
 
 1. **Work normally.** Nothing to maintain. Git commits are the source of truth.
 2. **Before you clear or switch tools:** `/handoff`. Do it proactively — don't wait for context to fill up.
-3. **Coming back, in any tool:** say "read AGENTS.md and resume" (or `/handoff-list`), then name the passphrase.
+3. **Coming back, in any tool:** paste the Chat resume prompt. Use `/handoff-list` only when you need to choose an older thread manually.
 
 ## Why write the note proactively
 

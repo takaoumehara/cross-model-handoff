@@ -8,8 +8,69 @@
   <a href="README.ko.md">한국어</a>
 </p>
 
-Escribe una nota antes de limpiar el contexto o cambiar de herramienta de IA. Retoma al instante nombrando su **frase de paso (passphrase)** — en Claude Code, Codex, Gemini CLI, Antigravity, Cursor, o cualquier herramienta que lea `AGENTS.md`.
+Escribe una nota antes de limpiar el contexto o cambiar de herramienta de IA. Retoma pegando el prompt de reanudación generado en la siguiente sesión — en Claude Code, Codex, Gemini CLI, Antigravity, Cursor, o cualquier herramienta que lea `AGENTS.md`.
 
+## For everyone (también para quienes no son ingenieros)
+
+No necesitas ser ingeniero. Puedes usarlo si trabajas con IA para escribir código o crear un proyecto.
+
+### Cuándo usarlo
+
+- Antes de limpiar una conversación larga con la IA
+- Cuando se están agotando tus créditos o tu contexto
+- Cuando quieres cambiar de Claude Code a Codex, Gemini u otra herramienta
+- Cuando quieres parar hoy y continuar más adelante
+
+### Cómo usarlo
+
+1. Ejecuta /handoff mientras todavía recuerdas bien el trabajo.
+2. Escribe una nota breve y muestra dos salidas listas para copiar.
+3. Copia el Chat resume prompt.
+4. Limpia la conversación o cambia de herramienta.
+5. Pega el prompt tal cual en la siguiente sesión de IA.
+
+La siguiente IA recibe el objetivo, el estado actual, el archivo exacto de handoff, el siguiente paso y los primeros archivos que debe leer. No tiene que buscar notas antiguas ni preguntarte qué frase de paso debe usar. Usa /handoff-list solo si quieres elegir manualmente entre varios hilos anteriores.
+
+### Qué verás
+
+La salida incluye un prompt de reanudación parecido a este:
+
+~~~text
+Continúa con el siguiente trabajo.
+
+Project: my-app
+Handoff file: .handoff/2026-07-20-fix-login.md
+Goal: Corregir el error de inicio de sesión
+State: El fallo está reproducido; la solución aún no está verificada
+Next: Ejecutar la prueba de inicio de sesión y revisar el error
+Read first: tests/login.test.ts; src/auth/login.ts
+Running: none
+
+Empieza por Next. No busques otros archivos .handoff.
+~~~
+
+Pega ese bloque en el siguiente chat de IA. La IA solo abrirá el archivo de handoff indicado si necesita más detalles.
+
+Para quienes usan terminal, también aparece este comando:
+
+~~~bash
+npx cross-model-handoff resume --file .handoff/2026-07-20-fix-login.md
+~~~
+
+Es el punto de entrada para los entornos que admiten este CLI. Si el CLI aún no está disponible, usa el Chat resume prompt anterior.
+
+## For engineers (para entender el funcionamiento)
+
+La nota de handoff comienza con un Resume Capsule breve y después contiene el registro detallado de la sesión. El Capsule incluye:
+
+- El proyecto y el archivo exacto de handoff
+- Una frase de paso con el nombre del repositorio al principio
+- El objetivo y el estado actual
+- Un siguiente paso concreto
+- Los archivos que deben leerse primero
+- Procesos, servidores, puertos y worktrees en ejecución
+
+La nota detallada sigue siendo la fuente de verdad y se mantiene por debajo de 80 líneas. Las notas antiguas sin Resume Capsule siguen funcionando mediante su frase de paso y /handoff-list.
 ## El problema
 
 Trabajando con varias herramientas de IA, dos cosas molestan constantemente:
@@ -49,8 +110,8 @@ La mayoría de las soluciones son pesadas — una wiki, un protocolo de document
 
 | Comando | Qué hace |
 |---|---|
-| `/handoff` | Escribe una nota en `.handoff/` — frase de paso, qué se hizo, estado actual, **estado de ejecución** (procesos en segundo plano, servidores de desarrollo, worktrees abiertos — lo que `git log` no puede decirte), siguiente paso. Después es seguro hacer `/clear`. |
-| `/handoff-list` | Lista las frases de paso en `.handoff/` para elegir una y retomar. |
+| `/handoff` | Escribe una nota en `.handoff/` y muestra un prompt de reanudación y un comando de terminal listos para copiar. La nota incluye frase de paso, qué se hizo, estado actual, **estado de ejecución** y siguiente paso. Después es seguro hacer `/clear`. |
+| `/handoff-list` | Función de respaldo: lista frases de paso antiguas en `.handoff/` para elegir un hilo manualmente. |
 | `/handoff-setup` | Crea `.handoff/` + `AGENTS.md` en un proyecto. Una vez por proyecto. |
 
 Más dos hooks — `SessionStart` (lista tus frases de paso automáticamente al retomar) y `PreCompact` (red de seguridad). Ambos corren solo a nivel del harness: cero coste de contexto.
@@ -59,7 +120,7 @@ Más dos hooks — `SessionStart` (lista tus frases de paso automáticamente al 
 
 1. **Trabaja con normalidad.** Nada que mantener. Los commits de git son la fuente de verdad.
 2. **Antes de limpiar o cambiar de herramienta:** `/handoff`. Hazlo de forma proactiva — no esperes a que el contexto se llene.
-3. **Al volver, en cualquier herramienta:** di "lee AGENTS.md y retoma" (o `/handoff-list`), y nombra la frase de paso.
+3. **Al volver, en cualquier herramienta:** pega el prompt de reanudación. Usa `/handoff-list` solo si necesitas elegir manualmente un hilo anterior.
 
 ## Por qué escribir la nota de forma proactiva
 

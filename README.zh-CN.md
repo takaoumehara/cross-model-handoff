@@ -8,8 +8,69 @@
   <a href="README.ko.md">한국어</a>
 </p>
 
-在清空上下文或切换 AI 工具之前,写一份笔记。之后只要说出它的**口令(passphrase)**即可立即恢复 —— 适用于 Claude Code、Codex、Gemini CLI、Antigravity、Cursor 等任何读取 `AGENTS.md` 的工具。
+在清空上下文或切换 AI 工具之前,写一份笔记。把生成的恢复 prompt 粘贴到下一次 AI 会话中,就能直接继续工作 —— 适用于 Claude Code、Codex、Gemini CLI、Antigravity、Cursor 等任何读取 `AGENTS.md` 的工具。
 
+## For everyone（任何人都能用）
+
+你不需要是工程师。只要你使用 AI 来写代码或制作项目，就可以使用它。
+
+### 什么时候使用
+
+- 你要清空一段很长的 AI 对话之前
+- 额度或上下文快用完时
+- 你想从 Claude Code 切换到 Codex、Gemini 或其他 AI 工具时
+- 你今天想停下来，之后再继续时
+
+### 怎么使用
+
+1. 在你还清楚当前工作内容时运行 /handoff。
+2. 它会写入一份短笔记，并显示两个可以复制的输出。
+3. 复制 Chat resume prompt。
+4. 清空对话，或切换到另一个 AI 工具。
+5. 把这个 prompt 原样粘贴到下一次 AI 会话中。
+
+下一次 AI 会直接得到目标、当前状态、准确的 handoff 文件、下一步行动和首先要读取的文件。它不需要搜索旧笔记，也不需要让你重新选择口令。只有在你想从多个旧线程中手动选择时，才需要使用 /handoff-list。
+
+### 你会看到什么
+
+输出中会有类似这样的恢复 prompt：
+
+~~~text
+请继续执行下一步工作。
+
+Project: my-app
+Handoff file: .handoff/2026-07-20-fix-login.md
+Goal: 修复登录错误
+State: 已复现问题；修复尚未验证
+Next: 运行登录测试并检查失败信息
+Read first: tests/login.test.ts; src/auth/login.ts
+Running: none
+
+请从 Next 开始。不要搜索其他 .handoff 文件。
+~~~
+
+把这个区块粘贴到下一次 AI 聊天中即可。只有需要更多细节时，AI 才会读取指定的 handoff 文件。
+
+终端用户还会看到另一个命令：
+
+~~~bash
+npx cross-model-handoff resume --file .handoff/2026-07-20-fix-login.md
+~~~
+
+这是支持该 CLI 的环境使用的入口。如果 CLI 尚不可用，请使用上面的 Chat resume prompt。
+
+## For engineers（想了解内部机制的人）
+
+handoff 笔记顶部有一个简短的 Resume Capsule，后面是详细的会话记录。Capsule 包含：
+
+- 项目名称和准确的 handoff 文件
+- 以仓库名开头的口令
+- 目标和当前状态
+- 一个明确的下一步行动
+- 首先要读取的文件
+- 正在运行的进程、服务器、端口和 worktree
+
+详细笔记仍然是唯一的事实来源，并保持在 80 行以内。没有 Resume Capsule 的旧笔记仍可通过口令和 /handoff-list 使用。
 ## 问题所在
 
 同时使用多个 AI 编程工具时,有两件事反复困扰你:
@@ -49,8 +110,8 @@
 
 | 命令 | 作用 |
 |---|---|
-| `/handoff` | 往 `.handoff/` 写一份笔记 —— 口令、已完成的工作、当前状态、**运行状态**(后台进程、开发服务器、打开的 worktree —— 这些是 `git log` 看不出来的)、下一步。写完就可以安全 `/clear`。 |
-| `/handoff-list` | 列出 `.handoff/` 里的口令,选一个即可恢复。 |
+| `/handoff` | 往 `.handoff/` 写一份笔记,然后显示可复制的恢复 prompt 和终端命令。笔记包含口令、已完成的工作、当前状态、**运行状态**和下一步。写完就可以安全 `/clear`。 |
+| `/handoff-list` | 备用功能:列出 `.handoff/` 中的旧口令,用于手动选择线程。 |
 | `/handoff-setup` | 在项目里搭建 `.handoff/` + `AGENTS.md`。每个项目做一次。 |
 
 外加两个 hook —— `SessionStart`(恢复时自动列出你的口令)和 `PreCompact`(安全网)。两者都只在框架层运行:零上下文开销。
@@ -59,7 +120,7 @@
 
 1. **正常工作。** 没有要维护的东西。git commit 就是唯一真相。
 2. **清空或切换工具之前:** `/handoff`。主动去做 —— 别等上下文塞满。
-3. **回来时(用任何工具):** 说"读一下 AGENTS.md 然后恢复"(或 `/handoff-list`),再说出口令。
+3. **回来时(用任何工具):** 直接粘贴恢复 prompt。只有需要手动选择旧线程时,才使用 `/handoff-list`。
 
 ## 为什么要主动写笔记
 
