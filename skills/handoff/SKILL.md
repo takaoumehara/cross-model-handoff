@@ -3,7 +3,7 @@ name: handoff
 description: Write ONE handoff note to .handoff/, then it's safe to /clear
 ---
 
-+Start the note with this compact block immediately after the title:
+Start the note with this compact block immediately after the title:
 
 ~~~markdown
 ## Resume Capsule
@@ -37,7 +37,7 @@ After writing, tell the user in Japanese:
 > モデルを切り替える場合: 新しいツールで「AGENTS.mdを読んで、.handoff/の最新ノートから再開して」と言えば続きから。
 > 合言葉リストを見たい場合は `/handoff-list` で一覧できます。
 
-+Then print these two copy-ready blocks. The first must embed the Capsule values so the next AI can start without searching .handoff/ or reading the full note:
+Then print these two copy-ready blocks. The first must embed the Capsule values so the next AI can start without searching .handoff/ or reading the full note:
 
 ~~~text
 次の作業を再開してください。
