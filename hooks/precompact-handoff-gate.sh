@@ -18,7 +18,7 @@ mkdir -p "$handoff_dir"
 
 reason="Context is about to be compacted. Write ONE handoff note to: ${handoff_dir}/{YYYY-MM-DD}-{task-slug}.md
 
-The note must contain: Passphrase (short memorable phrase to resume this thread), what was done, current state, running state (background processes/dev servers/worktrees — say \"none\" if nothing), next step. That's it — do NOT update any other files. One file only, then proceed."
+Start the note with a Resume Capsule containing Project, Handoff, repo-prefixed Passphrase, Goal, State, Next, Read first, and Running. Then include what was done, current state with verified and unverified items, running state with background processes/dev servers/worktrees (say \"none\" if nothing), next step, and files to read next. Keep the note under 80 lines. That's it — do NOT update any other files. One file only, then proceed."
 
 jq -n --arg reason "$reason" '{"decision":"block","reason":$reason}'
 exit 0
