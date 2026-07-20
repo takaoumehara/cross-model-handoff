@@ -8,7 +8,11 @@
   <a href="README.ko.md">한국어</a>
 </p>
 
-Escribe una nota antes de limpiar el contexto o cambiar de herramienta de IA. Retoma pegando el prompt de reanudación generado en la siguiente sesión — en Claude Code, Codex, Gemini CLI, Antigravity, Cursor, o cualquier herramienta que lea `AGENTS.md`.
+## Sigue con el mismo proyecto aunque cambies entre varias herramientas de IA
+
+¿Usas IDEs como VS Code, Antigravity o Cursor, o CLIs como Claude Code y Codex, para programar o crear otras cosas con varias IA?
+
+Cuando cambias de herramienta, cross-model-handoff transmite el contexto y la intención del proyecto a la siguiente IA. Ejecuta `/handoff` antes de limpiar el chat o cambiar de herramienta, y la IA generará un prompt de reanudación listo para pegar en la siguiente sesión. Funciona con Claude Code, Codex, Gemini CLI, Antigravity, Cursor y cualquier herramienta que lea `AGENTS.md`.
 
 ## For everyone (también para quienes no son ingenieros)
 
@@ -57,7 +61,7 @@ Para quienes usan terminal, también aparece este comando:
 npx cross-model-handoff resume --file .handoff/2026-07-20-fix-login.md
 ~~~
 
-Es el punto de entrada para los entornos que admiten este CLI. Si el CLI aún no está disponible, usa el Chat resume prompt anterior.
+Es otra forma de continuar para quienes prefieren trabajar desde la terminal. Puedes elegir entre pegar el prompt de reanudación en el chat o usar el comando de terminal, según tu flujo de trabajo.
 
 ## For engineers (para entender el funcionamiento)
 

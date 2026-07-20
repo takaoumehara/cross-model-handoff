@@ -8,7 +8,11 @@
   <a href="README.ko.md">한국어</a>
 </p>
 
-Write one note before you clear context or switch AI tools. Resume by pasting the copy-ready Chat resume prompt into the next AI session — in Claude Code, Codex, Gemini CLI, Antigravity, Cursor, or anything else that reads `AGENTS.md`.
+## Keep one project moving across multiple AI tools
+
+Do you use IDEs such as VS Code, Antigravity, or Cursor, and CLIs such as Claude Code or Codex to build software or create other things with AI?
+
+When you move between AI tools, cross-model-handoff carries the project's context and intent with you. Run `/handoff` before clearing a chat or switching tools, and the AI generates a ready-to-paste handoff prompt for the next AI. It works with Claude Code, Codex, Gemini CLI, Antigravity, Cursor, and any tool that reads `AGENTS.md`.
 
 ## For everyone
 
@@ -59,7 +63,7 @@ A second output is provided for terminal users:
 npx cross-model-handoff resume --file .handoff/2026-07-20-fix-login.md
 ~~~
 
-This command is the CLI entry point for environments that support it. If the CLI is not available, use the Chat resume prompt above.
+This is another way to continue from the terminal. Choose the chat prompt or the terminal command according to your workflow.
 
 ## For engineers
 

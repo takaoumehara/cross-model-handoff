@@ -8,7 +8,11 @@
   <b>한국어</b>
 </p>
 
-컨텍스트를 지우거나 AI 도구를 전환하기 전에 메모 하나를 작성하세요. 생성된 재개 prompt를 다음 AI 세션에 붙여넣으면 바로 이어서 작업할 수 있습니다 — Claude Code, Codex, Gemini CLI, Antigravity, Cursor 등 `AGENTS.md`를 읽는 어떤 도구에서도.
+## 여러 AI 도구를 오가도 한 프로젝트를 계속 이어가기
+
+VS Code, Antigravity, Cursor 같은 IDE나 Claude Code, Codex 같은 CLI로 여러 AI와 함께 프로그래밍이나 다른 창작 작업을 하고 있나요?
+
+AI 도구를 오갈 때 cross-model-handoff는 프로젝트의 컨텍스트와 설계 의도를 다음 AI에게 전달합니다. 채팅을 지우거나 도구를 바꾸기 전에 `/handoff`를 실행하면 다음 AI에게 붙여넣을 재개 prompt를 자동으로 만들어 줍니다. Claude Code, Codex, Gemini CLI, Antigravity, Cursor 및 `AGENTS.md`를 읽는 모든 도구에서 사용할 수 있습니다.
 
 ## For everyone (엔지니어가 아니어도 사용할 수 있습니다)
 
@@ -57,7 +61,7 @@ Next부터 시작해 주세요. 다른 .handoff 파일은 검색하지 마세요
 npx cross-model-handoff resume --file .handoff/2026-07-20-fix-login.md
 ~~~
 
-CLI를 지원하는 환경에서 사용하는 진입점입니다. CLI를 아직 사용할 수 없다면 위의 Chat resume prompt를 사용하세요.
+터미널에서 계속 작업하고 싶은 사람이 사용할 수 있는 또 하나의 입구입니다. 자신의 작업 방식에 따라 재개 prompt를 채팅에 붙여넣거나 터미널 명령을 사용하면 됩니다.
 
 ## For engineers (구조를 알고 싶은 사람을 위한 안내)
 

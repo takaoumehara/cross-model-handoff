@@ -8,7 +8,11 @@
   <a href="README.ko.md">한국어</a>
 </p>
 
-在清空上下文或切换 AI 工具之前,写一份笔记。把生成的恢复 prompt 粘贴到下一次 AI 会话中,就能直接继续工作 —— 适用于 Claude Code、Codex、Gemini CLI、Antigravity、Cursor 等任何读取 `AGENTS.md` 的工具。
+## 在多个 AI 工具之间切换，也能继续同一个项目
+
+你是否使用 VS Code、Antigravity、Cursor 等 IDE，或 Claude Code、Codex 等 CLI，和多个 AI 一起编程或创作？
+
+当你在 AI 工具之间切换时，cross-model-handoff 会把项目上下文和设计意图一起交给下一个 AI。在清空聊天或切换工具之前运行 `/handoff`，AI 就会自动生成一份可以粘贴给下一个 AI 的恢复 prompt。它适用于 Claude Code、Codex、Gemini CLI、Antigravity、Cursor，以及任何读取 `AGENTS.md` 的工具。
 
 ## For everyone（任何人都能用）
 
@@ -57,7 +61,7 @@ Running: none
 npx cross-model-handoff resume --file .handoff/2026-07-20-fix-login.md
 ~~~
 
-这是支持该 CLI 的环境使用的入口。如果 CLI 尚不可用，请使用上面的 Chat resume prompt。
+这是给习惯从终端继续工作的人使用的另一种入口。你可以根据自己的工作习惯，选择把恢复 prompt 粘贴到聊天中，或使用终端命令。
 
 ## For engineers（想了解内部机制的人）
 
